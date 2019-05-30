@@ -1,6 +1,7 @@
-int COUNT = 100;
+int COUNT = 10000;
 float SIZE = 5;
-int SWITCH = 1;
+int SWITCH = 2;
+// 0: Possion, 1: Regular, 2: Jitter
 
 void setup(){
   size(800,800);
@@ -14,9 +15,15 @@ void setup(){
     case(0):
       points = poisson(COUNT);
       break;
+      
     case(1):
       points = regular(int(sqrt(COUNT)),int(sqrt(COUNT)));
       break;
+      
+    case(2):
+      points = jitter(int(sqrt(COUNT)),int(sqrt(COUNT)));
+      break;
+      
     default:
       points = null;
       break;
@@ -43,4 +50,29 @@ PVector[] regular(int xNum, int yNum){
     }
   }
   return result;
+}
+
+
+PVector[] jitter(int xNum, int yNum){
+    PVector[] result = new PVector[xNum * yNum]; 
+  for(int x = 0; x < xNum; x++){
+    for(int y = 0; y < yNum; y++){
+      float resultX = random(width/(xNum-1) * (x),width/(xNum-1) * (x+1));
+      float resultY = random(height/(yNum-1) * (y),height/(yNum-1) * (y+1));
+      result[x*xNum+y] = new PVector(resultX, resultY);
+    }
+  }
+  return result;
+}
+
+PVector[] nrooks(int num){
+    float[] resultX = new float[num];
+    float[] resultY = new float[num];
+    for(int i = 0; i < num; i++){
+      resultX[i] = (width/num)*i;
+      resultX[i] = (height/num)*i;
+    }     
+    // UNFINISHED
+    
+    return null;
 }
