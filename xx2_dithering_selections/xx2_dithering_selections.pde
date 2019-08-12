@@ -5,16 +5,16 @@ int c = 125;
 
 PVector[] points, selection;
 float[] weights;
-float DOTSIZE = 3;
-int gridType = 2;      // 0 = rectangle, 1 = triangle, 2 = random, 3 = possion sampling
-int mix = 0;           // 0 = kepp; 1 = shuffle
+float DOTSIZE = 4;
+int gridType = 1;      // 0 = rectangle, 1 = triangle, 2 = random, 3 = possion sampling
+int mix = 1;           // 0 = kepp; 1 = shuffle
 int weightType = 0;    // 0 = point distance, 1 = gradient image, 2 = playboy image, 3 = umprum image
 int smoothed = 1;        // 0 = No, 1 = Yes
-int randomizeType = 3; // 0 = regular; 1 = weighted; 2 = by adding value; 3 = None
-int ditherType = 1;    // 0 = Distance weighted dithering, 1 = random, 2 = Threshold
+int randomizeType = 2; // 0 = regular; 1 = weighted; 2 = by adding value; 3 = None
+int ditherType = 0;    // 0 = Distance weighted dithering, 1 = random, 2 = Threshold
 
 void settings() {
-  size(800,800);
+  size(400,800);
 }
 
 
@@ -33,16 +33,16 @@ void setup() {
   // CREATING GRID //////////////
   switch(gridType){
     case 0:
-      points = pointGrid(200,200);
+      points = pointGrid(int(width/(DOTSIZE*1.5)),int(height/(DOTSIZE*1.5)));
       break;
     case 1:
-      points = pointDiaGrid(200,200);
+      points = pointDiaGrid(int(width/(DOTSIZE*1.5)),int(height/(DOTSIZE*1.5)));
       break;
     case 2:
-      points = pointRandom(100*100);
+      points = pointRandom(int(width/(DOTSIZE*1.5)*height/(DOTSIZE*1.5)));
       break;
     default:
-      points = possionDisk(100*100,10);
+      points = possionDisk(int(width/(DOTSIZE*1.5)*height/(DOTSIZE*1.5)),10);
       break;
   }
   
@@ -90,7 +90,7 @@ void setup() {
   // Dithering SELECTION ////////////
   switch(ditherType){
     case 0:
-      selection = dwDithering(points,weights,80);
+      selection = dwDithering(points,weights,30);
       break;
     case 1:
       selection = randomDithering(points,weights);
@@ -102,7 +102,6 @@ void setup() {
   
   //display(selection);
   //println("done");
-  saveFrame("result-######.png");
 }
 
 void draw() {
@@ -206,12 +205,12 @@ class ControlFrame extends PApplet {
 }
 
 PVector[] pointGrid(int xCount, int yCount){
-  PVector[] results = new PVector[xCount * yCount]; 
-  for (int i = 0; i < xCount; i++){
-    for (int j = 0; j < yCount; j++){
-      float x = width / xCount * i + (width/(2*xCount));
-      float y = height / yCount * j + (height/(2*yCount)); 
-      results[i * xCount + j] = new PVector(x,y);
+  PVector[] results = new PVector[xCount * yCount];
+  for (int j = 0; j < yCount; j++){
+    for (int i = 0; i < xCount; i++){
+      float x = (width / float(xCount)) * i + (width/(2*xCount));
+      float y = (height / float(yCount)) * j + (height/(2*yCount)); 
+      results[j * xCount + i] = new PVector(x,y);
     }
   }
   return results;
@@ -220,18 +219,18 @@ PVector[] pointGrid(int xCount, int yCount){
 PVector[] pointDiaGrid(int xCount, int yCount){
   println(xCount,yCount);
   PVector[] results = new PVector[xCount * yCount]; 
-  float xSpacing = width / xCount;
-  float ySpacing = height / xCount;
-  for (int i = 0; i < xCount; i++){
-    for (int j = 0; j < yCount; j++){
+  float xSpacing = width / float(xCount);
+  float ySpacing = height / float(yCount);
+  for (int j = 0; j < yCount; j++){
+    for (int i = 0; i < xCount; i++){
       float x = xSpacing * (i+(1.0/2));
       if (i % 2 == 0){
         float y = ySpacing * (j+(1.0/4)); 
-        println("-",i,j,x,y);
-        results[i * xCount + j] = new PVector(x,y);
+        //println("-",i,j,x,y);
+        results[j * xCount + i] = new PVector(x,y);
       } else {
         float y = ySpacing * (j+(3.0/4));
-        results[i * xCount + j] = new PVector(x,y);
+        results[j * xCount + i] = new PVector(x,y);
       }
 
     }
@@ -360,6 +359,42 @@ PVector[] dwDithering(PVector[] points, float[] weights, float distLimit){
   return results;
 }
 
+PVector[] dwDitheringCount(PVector[] points, float[] weights, int maxCount, float distLimit){
+  int count = points.length;
+  PVector[] results = new PVector[count];
+  for (int i = 0; i < count; i++){
+    float error = 0;
+    if (weights[i] > 0.5){
+      results[i] = points[i];
+      error = - 1 + weights[i];
+    } else {
+      results[i] = null;
+      error = weights[i];
+    }
+    float weightSum = 0;
+    ArrayList<Integer> neighbours = new ArrayList<Integer>();
+    for (int j = i+1; j < count; j++){
+      if (i != j){
+        float distance = dist(points[i].x,points[i].y,points[j].x,points[j].y);
+        if (distance <= distLimit){
+          weightSum += 1/distance;
+          neighbours.add(j);
+        }
+      }
+    }
+    for(int index : neighbours){
+     PVector p = points[index];
+      float distance = dist(points[i].x,points[i].y,p.x,p.y);
+      float weight = 1/distance;
+      float ratio = weight / weightSum;
+      float errorAddition = error * ratio;
+      //println("from:",i,"to:",index,"ratio:",ratio,"distance:",distance,"mass:",distMass,"weight:",weights[index],"add:",errorAddition,"error:",error);
+      weights[index] += errorAddition;
+    }
+  }
+  return results;
+}
+
 PVector[] treshold(PVector[] points, float[] weights){
   int count = points.length;
   PVector[] results = new PVector[count];
@@ -423,8 +458,9 @@ float[] smoothGraph(float[] numbers){
 
 
 void keyPressed() {
-  if (key == ' ') {
-    
+  if (key == 's') {
+    saveFrame("saveFrame.png");
+    println("Frame Saved");
   }
   if (key == 'r') {
     setup();
