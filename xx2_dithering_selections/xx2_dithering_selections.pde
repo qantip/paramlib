@@ -8,13 +8,13 @@ float[] weights;
 float DOTSIZE = 4;
 int gridType = 1;      // 0 = rectangle, 1 = triangle, 2 = random, 3 = possion sampling
 int mix = 1;           // 0 = kepp; 1 = shuffle
-int weightType = 2;    // 0 = point distance, 1 = gradient image, 2 = playboy image, 3 = umprum image
-int smoothed = 1;      // 0 = No, 1 = Yes
+int weightType = 0;    // 0 = point distance, 1 = gradient image, 2 = playboy image, 3 = umprum image
+int smoothed = 1;        // 0 = No, 1 = Yes
 int randomizeType = 2; // 0 = regular; 1 = weighted; 2 = by adding value; 3 = None
-int ditherType = 1;    // 0 = Distance weighted dithering, 1 = random, 2 = Threshold
+int ditherType = 0;    // 0 = Distance weighted dithering, 1 = random, 2 = Threshold
 
 void settings() {
-  size(800,800);
+  size(400,800);
 }
 
 
@@ -27,7 +27,7 @@ void setup() {
   fill(0);
   render();
 }
-  
+
   void render() {
 
   // CREATING GRID //////////////
@@ -45,7 +45,7 @@ void setup() {
       points = possionDisk(int(width/(DOTSIZE*1.5)*height/(DOTSIZE*1.5)),10);
       break;
   }
-  
+
   // SHUFFLE GRID /////////////////
   if (mix == 1){
     points = shuffle(points);
@@ -66,12 +66,12 @@ void setup() {
       weights = getImageWeights(points, loadImage("umprum.jpg"));
       break;
   }
-  
+
   // SMOOTHING WEIGHTS ////////////////
   if(smoothed == 1){
     weights = smoothGraph(weights);
   }
-  
+
   // RANDOMIZE WEIGHTS ////////////////
   switch(randomizeType){
     case 0:
@@ -86,7 +86,7 @@ void setup() {
     default:
       break;
   }
-  
+
   // Dithering SELECTION ////////////
   switch(ditherType){
     case 0:
@@ -99,7 +99,7 @@ void setup() {
       selection = treshold(points,weights);
       break;
   }
-  
+
   //display(selection);
   //println("done");
 }
@@ -116,7 +116,7 @@ class ControlFrame extends PApplet {
   ControlP5 cp5;
 
   public ControlFrame(PApplet _parent, int _w, int _h, String _name) {
-    super();   
+    super();
     parent = _parent;
     w=_w;
     h=_h;
@@ -139,35 +139,35 @@ class ControlFrame extends PApplet {
     //cp5.addNumberbox("color2").plugTo(parent, "c2").setRange(0, 1000).setValue(1).setPosition(100, 60).setSize(100,20);
     //cp5.addSlider("speed").plugTo(parent, "speed").setRange(0, 0.1).setValue(0.01).setPosition(100, 260).setSize(200,20);
     cp5.addButton("Render").setPosition(10,600).plugTo(parent,"render");
-    
+
     cp5.addListBox("Prohazeni")
       .setPosition(10,500)
       .addItem("Ano",1)
       .addItem("Ne",0)
       .plugTo(parent,"mix");
-          
+
     /*cp5.addMultiList("Prohazeni")
       .updateLocation(10,500)
       .add(new "Ano",1)
       .add("Ne",0)
       .plugTo(parent,"mix");
     */
-      
+
     cp5.addListBox("Zdroj")
       .setPosition(10,400)
       .addItem("Radialni",0)
       .addItem("Mekka mapa",1)
       .addItem("Playbody",2)
       .addItem("Umprum",3)
-      .plugTo(parent,"weightType"); 
-    
+      .plugTo(parent,"weightType");
+
      cp5.addDropdownList("Smoothing")
       .setPosition(10,300)
       .addItem("Ne",0)
       .addItem("Ano",1)
       .close()
       .plugTo(parent,"smoothed");
-      
+
     cp5.addDropdownList("Typ Ditheringu")
       .setPosition(10,200)
       .addItem("DWD",0)
@@ -175,7 +175,7 @@ class ControlFrame extends PApplet {
       .addItem("TH",2)
       .close()
       .plugTo(parent,"ditherType");
-   
+
     cp5.addDropdownList("Typ Mrizky")
       .setPosition(10,100)
       .addItem("ctverec",0)
@@ -183,22 +183,22 @@ class ControlFrame extends PApplet {
       .addItem("nahodny",2)
       .addItem("possion",3)
       .close()
-      .plugTo(parent,"gridType");   
-   
+      .plugTo(parent,"gridType");
+
     cp5.addSlider("yCount")
       .setRange(10,800)
-      .setPosition(10,50);   
-   
+      .setPosition(10,50);
+
    cp5.addSlider("Density")
       .setRange(50,500)
       .setPosition(10,10)
       .plugTo(parent, "");
-           
 
-    
-    
+
+
+
   }
-  
+
   void draw(){
     background(0);
   }
@@ -209,7 +209,7 @@ PVector[] pointGrid(int xCount, int yCount){
   for (int j = 0; j < yCount; j++){
     for (int i = 0; i < xCount; i++){
       float x = (width / float(xCount)) * i + (width/(2*xCount));
-      float y = (height / float(yCount)) * j + (height/(2*yCount)); 
+      float y = (height / float(yCount)) * j + (height/(2*yCount));
       results[j * xCount + i] = new PVector(x,y);
     }
   }
@@ -218,14 +218,14 @@ PVector[] pointGrid(int xCount, int yCount){
 
 PVector[] pointDiaGrid(int xCount, int yCount){
   println(xCount,yCount);
-  PVector[] results = new PVector[xCount * yCount]; 
+  PVector[] results = new PVector[xCount * yCount];
   float xSpacing = width / float(xCount);
   float ySpacing = height / float(yCount);
   for (int j = 0; j < yCount; j++){
     for (int i = 0; i < xCount; i++){
       float x = xSpacing * (i+(1.0/2));
       if (i % 2 == 0){
-        float y = ySpacing * (j+(1.0/4)); 
+        float y = ySpacing * (j+(1.0/4));
         //println("-",i,j,x,y);
         results[j * xCount + i] = new PVector(x,y);
       } else {
@@ -239,10 +239,10 @@ PVector[] pointDiaGrid(int xCount, int yCount){
 }
 
 PVector[] pointRandom(int count){
-  PVector[] results = new PVector[count]; 
+  PVector[] results = new PVector[count];
   for (int i = 0; i < count; i++){
     float x = random(width);
-    float y = random(height); 
+    float y = random(height);
     results[i] = new PVector(x,y);
   }
   return results;
@@ -251,12 +251,12 @@ PVector[] pointRandom(int count){
 PVector[] possionDisk(int count, int candidateCount){
   PVector[] results = new PVector[count];
   float x = random(width);
-  float y = random(height); 
-  results[0] = new PVector(x,y); 
+  float y = random(height);
+  results[0] = new PVector(x,y);
   for (int i = 1; i < count; i++){ // pro každý nový bod
     //PVector[] candidates = new PVector[candidateCount];
     x = random(width);
-    y = random(height); 
+    y = random(height);
     PVector bestCandidate = new PVector(x,y);
     float maxDistance = dist(results[0].x,results[0].y,bestCandidate.x,bestCandidate.y);
     for (int j = 1; j < candidateCount; j++){
@@ -436,7 +436,7 @@ float[] randomize(float[] numbers, float ratio){
 
 float[] randomizeWeighted(float[] numbers, float ratio){
   for(int i = 0; i < numbers.length; i++){
-    float weight = 2*(0.5-abs(numbers[i]-0.5)); 
+    float weight = 2*(0.5-abs(numbers[i]-0.5));
     numbers[i] *= random(1-ratio*weight,1+ratio*weight);
   }
   return numbers;
