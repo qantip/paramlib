@@ -8,18 +8,18 @@ float[] weights;
 float DOTSIZE = 4;
 int gridType = 1;      // 0 = rectangle, 1 = triangle, 2 = random, 3 = possion sampling
 int mix = 1;           // 0 = kepp; 1 = shuffle
-int weightType = 0;    // 0 = point distance, 1 = gradient image, 2 = playboy image, 3 = umprum image
-int smoothed = 1;        // 0 = No, 1 = Yes
+int weightType = 2;    // 0 = point distance, 1 = gradient image, 2 = playboy image, 3 = umprum image
+int smoothed = 1;      // 0 = No, 1 = Yes
 int randomizeType = 2; // 0 = regular; 1 = weighted; 2 = by adding value; 3 = None
-int ditherType = 0;    // 0 = Distance weighted dithering, 1 = random, 2 = Threshold
+int ditherType = 1;    // 0 = Distance weighted dithering, 1 = random, 2 = Threshold
 
 void settings() {
-  size(400,800);
+  size(800,800);
 }
 
 
 void setup() {
-  cf = new ControlFrame(this, 300, 800, "Controls");
+  //cf = new ControlFrame(this, 300, 800, "Controls");
   //surface.setLocation(420,10);
   //size(800,800);
   //background(255);
