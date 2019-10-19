@@ -1,8 +1,8 @@
 int WIDTH, HEIGHT;
-float ANGLE = 35;
-float SPACING = 7;
+float ANGLE = 20;
+float SPACING = 5;
 float length = 600;
-String imgPath = "lukas.jpg";
+String imgPath = "Mateja_Bg.jpg";
 PImage img;
 
 void settings(){
@@ -89,7 +89,7 @@ void widthLine(float x,float y,float x1,float y1){
     colorMode(HSB);
     fill(0,0,255);
     //fill(hue(c),saturation(c)/2,255);
-    fill(0,0,255,int(map(brightness(c),0,255,0,125)));
+    //fill(0,0,255,int(map(brightness(c),0,255,0,125)));
     ellipse(x2,y2,w,w);
   }
 
