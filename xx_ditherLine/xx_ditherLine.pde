@@ -14,60 +14,41 @@ void settings(){
 
 void setup() {
   background(0);
-  //background(#253a52);
+  background(#070033);
   float xSpacing = SPACING / sin(radians(ANGLE));
   float ySpacing = SPACING / cos(radians(ANGLE));
   print (xSpacing, ySpacing);
   float x,y,x1,y1,angleToCorner;
   // X for cycle
-  y = 0;
+  y = (cos(radians(ANGLE)))>0 ? 0 : height;
   for(x = 0; x < width; x += xSpacing){
     angleToCorner = degrees(atan((height - y)/(width - x)));
     if (angleToCorner < ANGLE){
       // yMax
       x1 = x + (1/(tan(radians(ANGLE)))*(height - y));
       y1 = height;
-      //x1 = x + cos(radians(ANGLE))*length;
-      //y1 = y + sin(radians(ANGLE))*length;
+
     } else {
       // xMax
       x1 = width;
       y1 = y + tan(radians(ANGLE))*(width - x);
     }
 
-    /**
-    line(x,y,x1,y1);
-    fill(#ff0000);
-    ellipse(x,y,5,5);
-    fill(#00ff00);
-    ellipse(x1,y1,5,5);
-    **/
-
     widthLine(x,y,x1,y1);
   }
   // Y for cycle
-  x = 0;
+  x = (sin(radians(ANGLE)))>0 ? 0 : width;
   for(y = ySpacing; y < height; y += ySpacing){
     angleToCorner = degrees(atan((height - y)/(width - x)));
     if (angleToCorner < ANGLE){
       // yMax
       x1 = x + (1/(tan(radians(ANGLE)))*(height - y));
       y1 = height;
-      //x1 = x + cos(radians(ANGLE))*length;
-      //y1 = y + sin(radians(ANGLE))*length;
     } else {
       // xMax
       x1 = width;
       y1 = y + tan(radians(ANGLE))*(width - x);
     }
-
-    /**
-    line(x,y,x1,y1);
-    fill(#ff0000);
-    ellipse(x,y,5,5);
-    fill(#00ff00);
-    ellipse(x1,y1,5,5);
-    **/
 
     widthLine(x,y,x1,y1);
   }
@@ -86,24 +67,17 @@ void widthLine(float x,float y,float x1,float y1){
     color c = img.get(int(x2),int(y2));
     float w = map(brightness(c),0,255,wMin,wMax);
     noStroke();
-    colorMode(HSB);
-    fill(0,0,255);
+    //colorMode(HSB);
+    fill(#fffee8);
+    //fill(0,0,255);
     //fill(hue(c),saturation(c)/2,255);
     //fill(0,0,255,int(map(brightness(c),0,255,0,125)));
     ellipse(x2,y2,w,w);
   }
 
-
-  /**
-  line(x,y,x1,y1);
-  fill(#ff0000);
-  ellipse(x,y,5,5);
-  fill(#00ff00);
-  ellipse(x1,y1,5,5);
-  **/
   saveFrame(imgPath+"_result.jpg");
 }
 
 void draw(){
-
+  noLoop();
 }
